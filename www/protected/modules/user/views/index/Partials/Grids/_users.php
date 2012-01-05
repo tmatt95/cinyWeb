@@ -1,0 +1,20 @@
+<?php 
+	$this->widget(
+		'zii.widgets.grid.CGridView', 
+		array(
+			'id'=>'users-grid',
+			'dataProvider'=>$search,
+			'filter'=>$model,
+			'summaryText'=>'{count} users',
+			'columns'=>array(
+				'username',
+				'name',
+				'email',
+				array(
+					'class'=>'CButtonColumn',
+					'template'=>'{update}{delete}'
+				),
+			),
+		)
+	); 
+?>

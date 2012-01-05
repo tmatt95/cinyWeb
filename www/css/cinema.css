@@ -1,0 +1,135 @@
+#logoText {
+    font-size: 27px;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.button-column img {display:inline;}
+body{background:#fff;}
+.body{position: relative;}
+
+h1{
+    margin-left: 0;
+    margin-top: 0;
+}
+
+#menuSection {
+    height: 27px;
+    margin-bottom: 10px;
+}
+
+#volunteerLink{
+	position: absolute;
+	left: 0px;
+	padding: 6px 9px;
+	text-align: right;
+	width: 120px;
+}
+
+#mainmenu{
+	position: absolute;
+	right: 0px;
+	width: 805px;
+}
+
+.rightCol {
+    text-align: center;
+    margin-left: 10px;
+    min-height: 177px;
+}
+.rightCol .portlet-content{text-align:left;}
+
+#newsSection {border:1px solid;}
+
+body .cinemaform .line label {
+    display: block;
+    float: left;
+    padding-right: 10px;
+    text-align: right;
+    width: 76px;
+	padding-top:6px;
+}
+
+.main .grid-view {
+    padding: 0;
+}
+
+.cinemaform .errorMessage {
+    margin-left: 29px;
+}
+
+.foot{
+    margin-top: 10px;
+    text-align: center;
+	font-size: 10px;
+}
+
+.adminBox{
+	height: 330px;
+	margin:10px 10px 0px 10px;
+}
+
+.adminBox.notLoaded{
+    background: none repeat scroll 0 0 silver;
+    color: #DDDDDD;
+    font-size: 61px;
+	height:230px;
+    padding-top: 100px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.adminBox.notLoaded:hover{
+    background: none repeat scroll 0 0 #fff;
+    color: silver;
+	cursor:pointer;
+}
+
+.adminBoxControlButtons {
+    padding-top: 6px;
+    text-align: right;
+}
+
+.adminBox h2 {margin-top:0px;margin-left:0px;}
+
+#users-form{width:100%;}
+#users-form,.popup-form label {
+    float: left;
+    padding-top: 7px;
+    text-align: right;
+    margin-right: 10px;
+}
+.popup-form label {width:101px;float:left;}
+div.form .row{text-align:left;}
+.popup-form .errorMessage,.popup-form .errorSummary{text-align:left;clear:both;}
+.popup-form .errorMessage{margin-left:112px;}
+
+#staticSections {
+    border: 1px solid silver;
+    margin: 0 10px;
+    padding: 10px 1px;
+}
+
+#staticSections span {
+    margin: 10px;
+}
+.backToAdminMenuButton{position:relative;top:-5px;}
+
+.ratings-options,.genre-options{visibility: hidden;}
+.ratings-row:hover .ratings-options,.genre-row:hover .genre-options{visibility:visible;}
+
+
+.newsItem-main{
+    margin: 10px 0;
+	display:block;
+}
+
+.newsItem-main:hover{
+   background:silver;
+   text-decoration: none;
+   cursor: pointer;
+}
+.genre-item {
+    width: 237px;
+    float: left;
+}
