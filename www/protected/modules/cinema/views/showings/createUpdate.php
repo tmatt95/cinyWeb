@@ -1,21 +1,10 @@
-<?php
-//	$this->breadcrumbs=array(
-//		'Showings'=>array('index'),
-//		$model->id=>array('view','id'=>$model->id),
-//		'Update',
-//	);
-//
-//	$this->menu=array(
-//		array('label'=>'List Showings', 'url'=>array('index')),
-//		array('label'=>'Create Showings', 'url'=>array('create')),
-//		array('label'=>'View Showings', 'url'=>array('view', 'id'=>$model->id)),
-//		array('label'=>'Manage Showings', 'url'=>array('admin')),
-//	);
-?>
 <?php $this->renderPartial('partials/forms/_form', array('model'=>$model)); ?>
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+		// This is used to enable the form to work through AJAX. It also
+		// gives us greater control over what to do depending on how the creation
+		// goes.
 		$("#showings-form").submit(function(event){
 			<?php if($model->isNewRecord){ ?>
 				var formUrl = "<?php echo Yii::app()->createUrl('/cinema/showings/create') ?>";
@@ -29,6 +18,7 @@
 			var time = $('#showingTime').val();
 			$('#Showings_date_time').val(date + ' ' + time);
 			
+			// Gets the data from the showing form
 			var formData = $("#showings-form").serialize();
 			
 			$.ajax({
@@ -45,7 +35,6 @@
 					}
 				}
 			});
-
 			return false;
 		});
 	});

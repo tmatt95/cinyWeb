@@ -4,10 +4,11 @@
  * This is the model class for table "news".
  *
  * The followings are the available columns in table 'news':
- * @property string $id
- * @property string $title
- * @property string $content
- * @property string $date_published
+ * @property int $id the unique id of the news item.
+ * @property string $title of the news article
+ * @property string $content Full content of the article
+ * @property datetime $date_published The date/time the article was created/
+ * published (as articles currently get published as soon as they are created)
  */
 class News extends CActiveRecord
 {
@@ -21,12 +22,9 @@ class News extends CActiveRecord
 	}
 
 	/**
-	 * @return string the associated database table name
+	 * @return string the name of the news table
 	 */
-	public function tableName()
-	{
-		return 'news';
-	}
+	public function tableName(){return 'news';}
 
    /**
      * @return array validation rules for model attributes.
@@ -46,17 +44,6 @@ class News extends CActiveRecord
     }
 
     /**
-     * @return array relational rules.
-     */
-    public function relations()
-    {
-        // NOTE: you may need to adjust the relation name and the related
-        // class name for the relations automatically generated below.
-        return array(
-        );
-    }
-
-    /**
      * @return array customized attribute labels (name=>label)
      */
     public function attributeLabels()
@@ -72,16 +59,12 @@ class News extends CActiveRecord
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models 
+	 * based on the search/filter conditions.
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id,true);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('content',$this->content,true);
 		$criteria->compare('date_added',$this->date_added,true);
@@ -91,6 +74,15 @@ class News extends CActiveRecord
 		));
 	}
 	
+	
+	// GRID COLUMNS ------------------------------------------------------------
+	
+	/**
+	 * The title of a news item
+	 * @param string $name
+	 * @param integer $id
+	 * @return string the title column contents for a news item 
+	 */
 	public static function colTitle($name,$id){
 		return CHtml::link($name,array('/news/index/update','id'=>$id));
 	}

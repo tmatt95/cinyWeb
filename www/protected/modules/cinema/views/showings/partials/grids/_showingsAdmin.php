@@ -35,7 +35,7 @@
 		)
 	));
 ?>
-<?php $this->renderPartial('/showings/partials/Dialogs/_showingsDialog'); ?>
+<?php $this->renderPartial('/showings/partials/dialogs/_showingsDialog'); ?>
 <script>
 	$(document).ready(function(){
 		

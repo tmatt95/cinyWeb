@@ -187,7 +187,7 @@
 				<?php }else{ ?>
 					<?php 
 						$this->renderPartial(
-							'/showings/partials/grids/showingsAdmin',
+							'/showings/partials/grids/_showingsAdmin',
 							array(
 								'model'=>$showings,
 								'modelSearch'=>$showings->search(),

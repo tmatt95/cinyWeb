@@ -28,7 +28,6 @@
 				'name'=>'showings-form[date]',
 				'id'=>'showingDate',
 				'value'=>$dateValue,
-				// additional javascript options for the date picker plugin
 				'options'=>array(
 					'defaultDate'=>'+0',
 					'dateFormat'=>'yy-mm-dd'

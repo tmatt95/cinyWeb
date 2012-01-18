@@ -1,13 +1,15 @@
 <?php
+/**
+ * This controller currently carries actions which are too generic to go into
+ * any of the others. It could be argued that some of these are too generic to
+ * even be in this place... but they are here for now and like it (page related
+ * actions).
+ * 
+ * @author Matt Turner - tmatt95@gmail.com
+ * @version 0.1 
+ */
 class IndexController extends Controller
 {
-	/**
-	 * @return array action filters
-	 */
-	public function filters(){
-		return array('accessControl');
-	}
-
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.

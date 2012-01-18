@@ -1,23 +1,14 @@
 <?php
-
+/**
+ * BOO... you could categorise that as scary. Genres do the 
+ * same for films. There is no set list of genres, which are defined in the
+ * database when the application is set up.
+ * 
+ * @author Matt Turner - tmatt95@gmail.com
+ * @version 1.0
+ */
 class GenresController extends Controller
 {
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
-
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -26,12 +17,6 @@ class GenresController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow', 
-				'actions'=>array(
-					'index'
-				),
-				'users'=>array('*')
-			),
 			array('allow',
 				'actions'=>array(
 					'create',
@@ -42,7 +27,7 @@ class GenresController extends Controller
 			array('allow',
 				'actions'=>array(
 					'delete',
-					'ManageGenres'
+					'manageGenres'
 				),
 				'expression'=>'Users::model()->isAdmin()'
 			),
@@ -62,7 +47,12 @@ class GenresController extends Controller
 		$response['status'] = 0;
 		$response['view'] = null;
 		$model=new Genres;
-		$dataProvider=new CActiveDataProvider('Genres',array('pagination'=>array('pageSize'=>11)));
+		$dataProvider=new CActiveDataProvider(
+			'Genres',
+			array(
+				'pagination'=>array('pageSize'=>11)
+			)
+		);
 		
 		$this->ajaxScriptControl();
 
@@ -100,7 +90,7 @@ class GenresController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$model=$this->loadModel($id);
+		$model=$this->loadModel('Genres',$id);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -128,8 +118,7 @@ class GenresController extends Controller
 		if(Yii::app()->request->isPostRequest)
 		{
 			$id = $_POST['id'];
-			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$this->loadModel('Genres',$id)->delete();
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -138,23 +127,15 @@ class GenresController extends Controller
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Genres');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
-	
-	/**
-	 * Lists all models.
-	 */
 	public function actionManageGenres()
 	{
 		$this->ajaxScriptControl();
 		
 		$model = new Genres;
-		$dataProvider=new CActiveDataProvider('Genres',array('pagination'=>array('pageSize'=>11)));
+		$dataProvider=new CActiveDataProvider(
+			'Genres',
+			array('pagination'=>array('pageSize'=>11))
+		);
 		
 		$this->renderPartial(
 			'ManageGenres',
@@ -165,31 +146,5 @@ class GenresController extends Controller
 			false,
 			true
 		);
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id)
-	{
-		$model=Genres::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param CModel the model to be validated
-	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='genres-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
 	}
 }

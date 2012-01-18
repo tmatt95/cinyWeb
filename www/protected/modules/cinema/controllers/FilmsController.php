@@ -3,16 +3,6 @@
 class FilmsController extends Controller
 {
 	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl'
-		);
-	}
-	
-	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
@@ -61,7 +51,7 @@ class FilmsController extends Controller
 		$this->render(
 			'view',
 			array(
-				'model'=>$this->loadModel($id)
+				'model'=>$this->loadModel('Films',$id)
 			)
 		);
 	}
@@ -150,8 +140,8 @@ class FilmsController extends Controller
 		$this->hideMainMenu = true;
 		
 		$genreToFilms = new GenresToFilms;
-		$model=$this->loadModel($id);
-		$this->performAjaxValidation($model);
+		$model=$this->loadModel('Films',$id);
+		$this->performAjaxValidation($model,'Films');
 		
 		// Used to load all the scripts whiche either needed now or by the items
 		// which will be ajaxed in
@@ -231,7 +221,7 @@ class FilmsController extends Controller
 		if(Yii::app()->request->isPostRequest)
 		{
 			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$this->loadModel('Films',$id)->delete();
 			
 		} else {
 			throw new CHttpException(
@@ -324,31 +314,5 @@ class FilmsController extends Controller
 			false,
 			true
 		);
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id)
-	{
-		$model=Films::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param CModel the model to be validated
-	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='films-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
 	}
 }

@@ -1,23 +1,13 @@
 <?php
-
+/**
+ * Films can be assigned a rating which can then be used by film goers to decide
+ * whether or not to watch the film (18 and PG).
+ * 
+ * @author Matt Turner - tmatt95@gmail.com
+ * @version 0.1
+ */
 class RatingsController extends Controller
 {
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
-
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -28,24 +18,11 @@ class RatingsController extends Controller
 		return array(
 			array('allow',
 				'actions'=>array(
-					'index',
-					'view'
-				),
-				'users'=>array('*')
-			),
-			array('allow',
-				'actions'=>array(
+					'delete',
+					'manageRatings',
+					'getRatingsSelect',
 					'create',
 					'update'
-				),
-				'users'=>array('@')
-			),
-			array('allow',
-				'actions'=>array(
-					'admin',
-					'delete',
-					'ManageRatings',
-					'GetRatingsSelect'
 				),
 				'expression'=>'Users::model()->isAdmin()'
 			),
@@ -56,18 +33,11 @@ class RatingsController extends Controller
 	}
 
 	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id)
-	{
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-		));
-	}
-	
-	/**
+	 * Conatins the manage rating section which is used to add / delete ratings
+	 * from the system.
 	 * 
+	 * The actual creation/deletion is carried out in other actions in this
+	 * controller. 
 	 */
 	public function actionManageRatings(){
 		$this->ajaxScriptControl();
@@ -79,12 +49,11 @@ class RatingsController extends Controller
 		if(isset($_POST['Ratings']))
 		{
 			$model->attributes=$_POST['Ratings'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->save();
 		}
 		
 		$this->renderPartial(
-			'manageRatings',
+			'partials/_manageRatings',
 			array(
 				'dataProvider'=>$dataProvider,
 				'model'=>$model
@@ -95,8 +64,8 @@ class RatingsController extends Controller
 	}
 
 	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
+	 * Adds a new rating to the system/shows the creation form, through which 
+	 * the new rating is added. 
 	 */
 	public function actionCreate($ajax = null)
 	{
@@ -104,10 +73,14 @@ class RatingsController extends Controller
 		$response['status'] = 0;
 		$response['view'] = null;
 		$model=new Ratings;
-		$dataProvider=new CActiveDataProvider('Ratings',array('pagination'=>array('pageSize'=>11)));
+		$dataProvider=new CActiveDataProvider(
+			'Ratings',
+			array(
+				'pagination'=>array('pageSize'=>11)
+			)
+		);
 
-		if(isset($_POST['Ratings']))
-		{
+		if(isset($_POST['Ratings'])){
 			$model->attributes=$_POST['Ratings'];
 			if($model->save())
 				$response['status'] = 1;
@@ -129,13 +102,14 @@ class RatingsController extends Controller
 	}
 
 	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * Updates a rating.
+	 * 
 	 * @param integer $id the ID of the model to be updated
+	 * @todo Showings cannot be currently updated.
 	 */
 	public function actionUpdate($id)
 	{
-		$model=$this->loadModel($id);
+		$model = $this->loadModel('Ratings',$id);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -153,80 +127,50 @@ class RatingsController extends Controller
 	}
 
 	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
+	 * Deletes an individual rating from the system.
+	 * @param integer $id of the rating to be deleted
 	 */
 	public function actionDelete()
 	{
 		$id = $_POST['id'];
 		if(Yii::app()->request->isPostRequest)
 		{
-			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$this->loadModel('Ratings',$id)->delete();
 		}
-		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+		else {
+			throw new CHttpException(
+				400,
+				'Invalid request. Please do not repeat this request again.'
+			);
+		}
 	}
 	
+	/**
+	 * There are times when we want to update just the ratings drop down list 
+	 * dynamically after the page has loaded (such as after adding/deleting a 
+	 * rating from the system). This action will do just that, returning just 
+	 * the dropdown list with the selected item, selected.
+	 * 
+	 * @param integer $selectedId id of the selected rating which will be set as
+	 * selected when returned to the browser.
+	 */
 	public function actionGetRatingsSelect($selectedId = null){
+		// Gets an array of all the ratings in the system
 		$ratings = Ratings::model()->getAllRatings();
 		
+		// If the selected id no longer exists (the rating could have been
+		// deleted) then sets it to null. With it set to this the top rating 
+		// will be chosen.
 		if(!array_key_exists($selectedId, $ratings))
 			$selectedId = null;
-				
-		echo CHtml::dropDownList('Films[rating]',$selectedId,Ratings::model()->getAllRatings());
-	}
-
-	/**
-	 * Lists all models.
-	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Ratings');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-		$model=new Ratings('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Ratings']))
-			$model->attributes=$_GET['Ratings'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id)
-	{
-		$model=Ratings::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param CModel the model to be validated
-	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='ratings-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+		
+		// @todo supply the name of the rating field as a get parameter. This 
+		// would mean that the rating field can be used in more than just the 
+		// film form.
+		echo CHtml::dropDownList(
+			'Films[rating]',
+			$selectedId,
+			Ratings::model()->getAllRatings()
+		);
 	}
 }

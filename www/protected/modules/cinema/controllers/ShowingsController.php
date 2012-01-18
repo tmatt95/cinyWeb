@@ -1,19 +1,12 @@
 <?php
 /**
- * A film can have many "showings" (dates that the film is shown).
+ * A film can have many "showings" (dates that the film is shown on).
+ * 
+ * @author Matthew Turner - tmatt95@gmail.com
+ * @version 0.1
  */
 class ShowingsController extends Controller
 {
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.
@@ -22,67 +15,56 @@ class ShowingsController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow', 
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
 			array('allow',
 				'actions'=>array('create','update'),
-				'users'=>array('@'),
+				'users'=>array('@')
 			),
 			array('allow',
 				'actions'=>array(
-					'admin',
 					'delete',
 					'getShowingsAdminPanel'
 				),
 				'expression'=>'Users::model()->isAdmin()'
 			),
 			array('deny',
-				'users'=>array('*'),
+				'users'=>array('*')
 			),
 		);
 	}
 
 	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id)
-	{
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-		));
-	}
-
-	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' 
-	 * page.
+	 * Add a new showing to the system and or display the showing creation form. 
 	 * 
 	 * @param int $filmId The id of the film that the showing should be linked 
-	 * to
+	 * to. This is optional and is not required when posting the filled in form
+	 * back to the server as it will then be included in a POST variable. It is
+	 * madatory when displaying the create form however!
+	 * 
+	 * @return string containing the create form (with and without errors and 
+	 * the view). This is JSON encoded in the following format:
+	 * 
+	 * .status => Whether or not the create action succeded (1 on success, 0 on
+	 * failiure).
+	 * 
+	 * .view => The create showings form. 
 	 */
 	public function actionCreate($filmId=null)
 	{
-		$this->ajaxScriptControl();
-		$response['status'] = 0;
+		// Performs AJAX validation
+		$this->performAjaxValidation($model);
 		
 		// This is needed to stop jquery overwritting itself
-		//$this->ajaxScriptControl();
+		$this->ajaxScriptControl();
 		
 		$model=new Showings;
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
+		$response['status'] = 0;
+		
 		if(isset($_POST['Showings']))
 		{
 			$model->attributes=$_POST['Showings'];
 			if($model->save())
 				$response['status'] = 1;
 		}
-
 		$model->film_id = $filmId;
 		
 		$response['view'] = $this->renderPartial(
@@ -97,9 +79,18 @@ class ShowingsController extends Controller
 	}
 
 	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
+	 * Updates information on a showing/displays the update showing form
+	 * allowing the user to make the update.
+	 * 
+	 * @param integer $id of the showing being updated
+	 * 
+	 * @return string containing the create form (with and without errors and 
+	 * the view). This is JSON encoded in the following format:
+	 * 
+	 * .status => Whether or not the create action succeded (1 on success, 0 on
+	 * failiure).
+	 * 
+	 * .view => The create showings form. 
 	 */
 	public function actionUpdate($id)
 	{
@@ -107,9 +98,7 @@ class ShowingsController extends Controller
 		
 		$response['status'] = 0;
 		$response['view'] = null;
-		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
+		$model=$this->loadModel('Showings',$id);
 		$this->performAjaxValidation($model);
 
 		if(isset($_POST['Showings']))
@@ -132,59 +121,26 @@ class ShowingsController extends Controller
 	}
 
 	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
+	 * Deletes a showing from the system.
+	 * 
+	 * @param integer $id unique id of the showing which you would like to 
+	 * delete.
+	 * 
+	 * @todo Look at what the delete showing function can return.
 	 */
 	public function actionDelete($id)
 	{
-		if(Yii::app()->request->isPostRequest)
-		{
-			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+		if(Yii::app()->request->isPostRequest){
+			$this->loadModel('Showings',$id)->delete();
 		}
-		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+		else{
+			throw new CHttpException(
+				400,
+				'Invalid request. Please do not repeat this request again.'
+			);
+		}
 	}
 
-	/**
-	 * Lists all models.
-	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Showings');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-		$model=new Showings('search');
-		$model->unsetAttributes();
-		if(isset($_GET['Showings']))
-			$model->attributes=$_GET['Showings'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id){
-		$model=Showings::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-	
 	/**
 	 * This is the showings panel which is loaded when the admin selects it from
 	 * the administration panel
@@ -206,7 +162,7 @@ class ShowingsController extends Controller
 		$search->pagination = array('pageSize'=>5);
 		
 		$showingGrid = $this->renderPartial(
-			'partials/grids/showingsAdmin',
+			'partials/grids/_showingsAdmin',
 			array(
 				'model'=>$model,
 				'modelSearch'=>$search
@@ -215,24 +171,12 @@ class ShowingsController extends Controller
 		);
 		
 		$this->renderPartial(
-			'getShowingsAdminPanel',
+			'partials/_showingsAdminPanel',
 			array(
 				'showingGrid'=>$showingGrid
 			),
 			false,
 			true
 		);
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param CModel the model to be validated
-	 */
-	protected function performAjaxValidation($model){
-		if(isset($_POST['ajax']) && $_POST['ajax']==='showings-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
 	}
 }

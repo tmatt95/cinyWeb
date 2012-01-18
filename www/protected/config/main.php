@@ -75,6 +75,9 @@
 					),
 				),
 			),
+'assetManager'=>array(
+				'linkAssets'=>true
+			)
 		),
 
 		/**
